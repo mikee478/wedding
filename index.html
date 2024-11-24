@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wedding Countdown</title>
+    <style>
+        body {
+            margin: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            font-family: Arial, sans-serif;
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+            position: relative;
+        }
+
+        .background {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-size: cover;
+            background-position: center;
+            transition: opacity 1s ease-in-out;
+        }
+
+        .background.hidden {
+            opacity: 0; /* Fade out the inactive background */
+        }
+
+        .timer {
+            position: absolute; /* Allow precise positioning */
+            bottom: 20%; /* Place in the bottom quarter */
+            left: 50%; /* Center horizontally */
+            transform: translateX(-50%); /* Adjust for perfect centering */
+            text-align: center;
+            background: rgba(0, 0, 0, 0.5);
+            padding: 15px;
+            border-radius: 10px;
+            max-width: 80%;
+        }
+
+        .timer h1 {
+            font-size: 2rem; /* Smaller text overall */
+            margin-bottom: 10px;
+        }
+
+        .timer p {
+            font-size: 1.5rem; /* Smaller text overall */
+        }
+
+        /* Media query for mobile devices */
+        @media (max-width: 768px) {
+            .timer h1 {
+                font-size: 1.5rem; /* Smaller on mobile */
+            }
+
+            .timer p {
+                font-size: 1.2rem; /* Smaller on mobile */
+            }
+
+            .timer {
+                padding: 10px; /* Less padding on mobile */
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="background" id="background1"></div>
+    <div class="background hidden" id="background2"></div>
+    <div class="timer">
+        <h1>Wedding Countdown<br>July 3rd, 2024</h1>
+        <p id="countdown"></p>
+    </div>
+
+    <script>
+
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                // Pick a random index from 0 to i
+                const randomIndex = Math.floor(Math.random() * (i + 1));
+                // Swap the current element with the randomly picked one
+                [array[i], array[randomIndex]] = [array[randomIndex], array[i]];
+            }
+            return array;
+        }
+
+        // Background image slideshow
+        const images = shuffleArray([
+            'images/image-0.jpg',
+            'images/image-1.jpg',
+            'images/image-2.jpg',
+            'images/image-3.jpg',
+            'images/image-4.jpg',
+            'images/image-5.jpg',
+            'images/image-6.jpg',
+            'images/image-7.jpg',
+            'images/image-8.jpg'
+        ]);
+
+        // Preload images
+        images.forEach((src) => {
+            const img = new Image();
+            img.src = src;
+        });
+
+        const changeInterval = 5000; // Change background every 2 seconds
+        let currentImageIndex = 0;
+        let activeBackground = 1; // Track which background is active
+
+        function changeBackground() {
+            const bg1 = document.getElementById('background1');
+            const bg2 = document.getElementById('background2');
+
+            // Set the next image
+            const nextImage = images[currentImageIndex];
+            currentImageIndex = (currentImageIndex + 1) % images.length;
+
+            // Alternate between the two backgrounds
+            if (activeBackground === 1) {
+                bg2.style.backgroundImage = `url(${nextImage})`;
+                bg2.classList.remove('hidden'); // Fade in bg2
+                bg1.classList.add('hidden'); // Fade out bg1
+                activeBackground = 2;
+            } else {
+                bg1.style.backgroundImage = `url(${nextImage})`;
+                bg1.classList.remove('hidden'); // Fade in bg1
+                bg2.classList.add('hidden'); // Fade out bg2
+                activeBackground = 1;
+            }
+        }
+
+        setInterval(changeBackground, changeInterval);
+        changeBackground(); // Initial call
+
+        // Countdown timer
+        const targetDate = new Date('July 3, 2025 12:00:00 EST').getTime();
+
+        function updateCountdown() {
+            const now = new Date().getTime();
+            const distance = targetDate - now;
+
+            if (distance <= 0) {
+                document.getElementById("countdown").innerHTML = "You better be married by now!";
+                return;
+            }
+
+            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+            document.getElementById("countdown").innerHTML = 
+                `${days}d ${hours}h ${minutes}m ${seconds}s`;
+        }
+
+        setInterval(updateCountdown, 1000);
+        updateCountdown(); // Initial call
+    </script>
+</body>
+</html>
